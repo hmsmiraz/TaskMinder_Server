@@ -29,6 +29,22 @@ async function run() {
     // collections
     const userCollection = client.db("taskMinderDB").collection("users");
     const taskCollection = client.db("taskMinderDB").collection("tasks");
+
+    // users
+    app.get("/users",  async (req, res) => {
+      const cursor = userCollection.find();
+      const users = await cursor.toArray();
+      res.send(users);
+    });
+
+    app.post("/users",  async (req, res) => {
+      const user = req.body;
+      //console.log(user);
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+
+    
     
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
