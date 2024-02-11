@@ -3,26 +3,13 @@ const app = express();
 const cors = require("cors");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
-const fs = require('fs');
 
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" }); 
 // middleware
 app.use(cors());
 app.use(express.json());
 
-const createUploadsFolder = () => {
-  const folderPath = './uploads';
-  if (!fs.existsSync(folderPath)) {
-    fs.mkdirSync(folderPath);
-    console.log('Uploads folder created successfully.');
-  } else {
-    console.log('Uploads folder already exists.');
-  }
-};
 
-// Call the function to create the "uploads" folder
-createUploadsFolder();
+
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.meftkqt.mongodb.net/?retryWrites=true&w=majority`;
@@ -66,27 +53,13 @@ async function run() {
       res.send(result);
     });
 
-    // app.post("/tasks", async (req, res) => {
-    //   const taskData = req.body;
-    //   const result = await taskCollection.insertOne(taskData);
-    //   res.send(result);
-    // });
-
-
-    app.post("/tasks", upload.array("files"), async (req, res) => {
+    app.post("/tasks", async (req, res) => {
       const taskData = req.body;
-      if (req.files && req.files.length > 0) {
-        taskData.files = req.files.map((file) => ({
-          filename: file.filename,
-          originalname: file.originalname
-        }));
-      } else {
-        taskData.files = [];
-      }
-    
       const result = await taskCollection.insertOne(taskData);
       res.send(result);
     });
+
+
 
     app.get("/tasks/:id", async (req, res) => {
       const id = req.params.id;
